@@ -2,11 +2,10 @@ package dbmodel;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-
-import org.hibernate.annotations.Generated;
-import org.hibernate.annotations.GenerationTime;
 
 @Entity
 @Table(name = "argument", schema = "public")
@@ -14,7 +13,7 @@ public class Argument implements java.io.Serializable {
 
 	private static final long serialVersionUID = 6491768238368314786L;
 	
-	private int id;
+	private Integer id;
 	private int idCitizen;
 	private int idProject;
 	private String argument;
@@ -34,12 +33,12 @@ public class Argument implements java.io.Serializable {
 
 	@Id
 	@Column(name = "id", unique = true, nullable = false)
-	@Generated(GenerationTime.INSERT)
-	public int getId() {
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	public Integer getId() {
 		return this.id;
 	}
 
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 

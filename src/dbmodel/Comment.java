@@ -13,30 +13,38 @@ public class Comment implements java.io.Serializable {
 
 	private static final long serialVersionUID = -2834481125701913424L;
 
-	private int id;
+	private Integer id;
 	private int idCitizen;
 	private int idProject;
-	private int idParent;
+	private Integer idParent;
 	private String comment;
 
 	public Comment() {
 	}
 
-	public Comment(int id, int idCitizen, int idProject, String comment) {
+	public Comment(Integer id, int idCitizen, int idProject, String comment) {
 		this.id = id;
 		this.idCitizen = idCitizen;
 		this.idProject = idProject;
 		this.comment = comment;
 	}
 
+	public Comment(Integer id, int idCitizen, int idProject, Integer idParent, String comment) {
+		this.id = id;
+		this.idCitizen = idCitizen;
+		this.idProject = idProject;
+		this.idParent = idParent;
+		this.comment = comment;
+	}
+	
 	@Id
 	@Column(name = "id", unique = true, nullable = false)
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	public int getId() {
+	public Integer getId() {
 		return this.id;
 	}
 
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
@@ -59,11 +67,11 @@ public class Comment implements java.io.Serializable {
 	}
 
 	@Column(name = "id_parent")
-	public int getIdParent() {
+	public Integer getIdParent() {
 		return this.idParent;
 	}
 
-	public void setIdParent(int idParent) {
+	public void setIdParent(Integer idParent) {
 		this.idParent = idParent;
 	}
 
