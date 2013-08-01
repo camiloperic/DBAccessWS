@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
+             version="2.0">
+    <persistence-unit name="DBAccessPU">
+        <provider>org.hibernate.ejb.HibernatePersistence</provider>
+        <class>dbmodel.Agreeargument</class>
+    	<class>dbmodel.Agreecomment</class>
+    	<class>dbmodel.AgreeargumentId</class>
+    	<class>dbmodel.AgreecommentId</class>
+    	<class>dbmodel.Argument</class>
+    	<class>dbmodel.Citizen</class>
+    	<class>dbmodel.Comment</class>
+    	<class>dbmodel.Following</class>
+    	<class>dbmodel.FollowingId</class>
+    	<class>dbmodel.Keyword</class>
+    	<class>dbmodel.Keyworded</class>
+    	<class>dbmodel.KeywordedId</class>
+    	<class>dbmodel.Project</class>
+    	<class>dbmodel.Signature</class>
+    	<class>dbmodel.SignatureId</class>
+    	<class>dbmodel.Tag</class>
+    	<class>dbmodel.Tagged</class>
+    	<class>dbmodel.TaggedId</class> 
+        <properties>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
+            <property name="hibernate.hbm2ddl.auto" value="update"/>
+
+            <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
+            <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/egov"/>
+            <property name="javax.persistence.jdbc.user" value="egov"/>
+            <property name="javax.persistence.jdbc.password" value="egov"/>
+        </properties>
+    </persistence-unit>
+</persistence>
