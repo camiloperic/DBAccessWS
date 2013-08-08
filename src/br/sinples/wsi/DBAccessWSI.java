@@ -1,5 +1,8 @@
 package br.sinples.wsi;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
@@ -16,6 +19,7 @@ import br.sinples.model.Following;
 import br.sinples.model.Keyworded;
 import br.sinples.model.Signature;
 import br.sinples.model.Tagged;
+import br.sinples.model.view.ArgumentView;
 import br.sinples.model.view.ProjectView;
 
 public class DBAccessWSI {
@@ -228,7 +232,7 @@ public class DBAccessWSI {
 						+ "where id = :idProject")
 				.setParameter("idProject", idProject)
 				.getSingleResult();
-		Object result = em.createNativeQuery(
+		Object projectData = em.createNativeQuery(
 				"select "
 					+ "s.signatures, s.signed, "
 					+ "cast(count(f1.id_citizen) as integer)as followers, "
@@ -254,15 +258,77 @@ public class DBAccessWSI {
 				.setParameter("idProject", idProject)
 				.setParameter("idCitizen", idCitizen)
 				.getSingleResult();
-//		System.out.println("Values\t[" + ((Object[])result)[0] + "]\t[" + ((Object[])result)[1] + "]\t[" + ((Object[])result)[2] + "]\t[" + ((Object[])result)[3] + "]");
 		em.close();
 		ProjectView projectView = new ProjectView();
 		projectView.setProject(project);
-		projectView.setSignatures((int)(((Object[])result)[0]));
-		projectView.setSigned(((Object[])result)[1] == null ? false : true);
-		projectView.setFollowers((int)(((Object[])result)[2]));
-		projectView.setFollowing(((Object[])result)[3] == null ? false : true);
+		projectView.setSignatures((int)(((Object[])projectData)[0]));
+		projectView.setSigned(((Object[])projectData)[1] == null ? false : true);
+		projectView.setFollowers((int)(((Object[])projectData)[2]));
+		projectView.setFollowing(((Object[])projectData)[3] == null ? false : true);
 		return projectView;
+	}
+	
+	public List<ArgumentView> getArguments(int idProject, int idCitizen, boolean pro, int max, int offset) {
+		EntityManagerFactory emf = Persistence.createEntityManagerFactory("DBAccessPU");
+		EntityManager em = emf.createEntityManager();
+		List<Argument> arguments = em.createNativeQuery(
+				"select a.id, a.argument, a.pro, a.id_citizen, a_id_project "
+				+ "from argument a "
+				+ "left join agreeargument aa "
+				+ "on a.id = aa.id_argument "
+				+ "where a.id_project = :idProject "
+				+ "and a.pro = :pro "
+				+ "group by 1"
+				+ "order by count(aa.id_citizen) desc, a.id "
+				+ "limit :max "
+				+ "offset :offset ;")
+				.setParameter("idProject", idProject)
+				.setParameter("max", max)
+				.setParameter("offset", offset)
+				.setParameter("pro", pro)
+				.getResultList();
+		
+		List<Object> argumentsData = em.createNativeQuery(
+				"select a.id, cast(count(aa1.id_citizen) as integer) as agreements, aa2.id_citizen as agreed "
+				+ "from argument a "
+				+ "left join agreeargument aa1 "
+				+ "on a.id = aa1.id_argument "
+				+ "left join agreeargument aa2 "
+				+ "on a.id = aa2.id_argument "
+				+ "and aa2.id_citizen = :idCitizen "
+				+ "where a.id_project = :idProject "
+				+ "and a.pro = :pro "
+				+ "group by a.id, aa2.id_citizen "
+				+ "order by count(aa1.id_citizen) desc, a.id "
+				+ "limit :max "
+				+ "offset :offset ;")
+				.setParameter("idCitizen", idCitizen)
+				.setParameter("idProject", idProject)
+				.setParameter("pro", pro)
+				.setParameter("max", max)
+				.setParameter("offset", offset)
+				.getResultList();
+		
+		if (arguments.size() != argumentsData.size()) {
+			System.out.println("Different number of arguments and it's datas.");
+			return null;
+		}
+		
+		List<ArgumentView> argumentsView = new ArrayList<ArgumentView>();
+		
+		for (int i = 0; i < arguments.size(); i++) {
+			ArgumentView argumentView = new ArgumentView();
+			argumentView.setArgument(arguments.get(i));
+			Object argumentData[] = (Object[])argumentsData.get(i);
+			argumentView.setAgreements((int)argumentData[1]);
+			argumentView.setAgreed(argumentData[2] == null ? false : true);
+			if(argumentView.getArgument().getId() != (int)argumentData[0]) {
+				System.out.println("Arguments and it's datas out of sync.");
+				return null;
+			}
+			argumentsView.add(argumentView);
+		}
+		return argumentsView;
 	}
 	
 	public boolean isSketch (int idProject) {
