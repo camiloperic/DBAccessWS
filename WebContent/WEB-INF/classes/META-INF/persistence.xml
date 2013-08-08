@@ -5,24 +5,24 @@
              version="2.0">
     <persistence-unit name="DBAccessPU">
         <provider>org.hibernate.ejb.HibernatePersistence</provider>
-        <class>dbmodel.Agreeargument</class>
-    	<class>dbmodel.Agreecomment</class>
-    	<class>dbmodel.AgreeargumentId</class>
-    	<class>dbmodel.AgreecommentId</class>
-    	<class>dbmodel.Argument</class>
-    	<class>dbmodel.Citizen</class>
-    	<class>dbmodel.Comment</class>
-    	<class>dbmodel.Following</class>
-    	<class>dbmodel.FollowingId</class>
-    	<class>dbmodel.Keyword</class>
-    	<class>dbmodel.Keyworded</class>
-    	<class>dbmodel.KeywordedId</class>
-    	<class>dbmodel.Project</class>
-    	<class>dbmodel.Signature</class>
-    	<class>dbmodel.SignatureId</class>
-    	<class>dbmodel.Tag</class>
-    	<class>dbmodel.Tagged</class>
-    	<class>dbmodel.TaggedId</class> 
+        <class>br.sinples.dbmodel.AgreeArgument</class>
+    	<class>br.sinples.dbmodel.AgreeComment</class>
+    	<class>br.sinples.dbmodel.AgreeArgumentId</class>
+    	<class>br.sinples.dbmodel.AgreeCommentId</class>
+    	<class>br.sinples.dbmodel.Argument</class>
+    	<class>br.sinples.dbmodel.Citizen</class>
+    	<class>br.sinples.dbmodel.Comment</class>
+    	<class>br.sinples.dbmodel.Following</class>
+    	<class>br.sinples.dbmodel.FollowingId</class>
+    	<class>br.sinples.dbmodel.Keyword</class>
+    	<class>br.sinples.dbmodel.Keyworded</class>
+    	<class>br.sinples.dbmodel.KeywordedId</class>
+    	<class>br.sinples.dbmodel.Project</class>
+    	<class>br.sinples.dbmodel.Signature</class>
+    	<class>br.sinples.dbmodel.SignatureId</class>
+    	<class>br.sinples.dbmodel.Tag</class>
+    	<class>br.sinples.dbmodel.Tagged</class>
+    	<class>br.sinples.dbmodel.TaggedId</class> 
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
             <property name="hibernate.hbm2ddl.auto" value="update"/>
