@@ -8,6 +8,12 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 
+import org.apache.axis2.AxisFault;
+import org.apache.axis2.context.MessageContext;
+import org.apache.axis2.transport.http.HTTPConstants;
+import org.apache.axis2.wsdl.WSDLConstants;
+import org.apache.commons.httpclient.Header;
+
 import br.sinples.dbmodel.Argument;
 import br.sinples.dbmodel.Citizen;
 import br.sinples.dbmodel.Comment;
@@ -265,28 +271,23 @@ public class DBAccessWSI {
 		projectView.setSigned(((Object[])projectData)[1] == null ? false : true);
 		projectView.setFollowers((int)(((Object[])projectData)[2]));
 		projectView.setFollowing(((Object[])projectData)[3] == null ? false : true);
+//		MessageContext responseMessageContext;
+//		try {
+//			responseMessageContext = MessageContext.getCurrentMessageContext().getOperationContext().getMessageContext(  
+//			           WSDLConstants.MESSAGE_LABEL_OUT_VALUE);
+//			List headers = new ArrayList();  
+//			headers.add(new Header(HTTPConstants., "identity"));  
+//			responseMessageContext.setProperty(HTTPConstants.HTTP_HEADERS, headers);
+//		} catch (AxisFault e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}  
 		return projectView;
 	}
 	
 	public List<ArgumentView> getArguments(int idProject, int idCitizen, boolean pro, int max, int offset) {
 		EntityManagerFactory emf = Persistence.createEntityManagerFactory("DBAccessPU");
 		EntityManager em = emf.createEntityManager();
-		List<Argument> arguments = em.createNativeQuery(
-				"select a.id, a.argument, a.pro, a.id_citizen, a_id_project "
-				+ "from argument a "
-				+ "left join agreeargument aa "
-				+ "on a.id = aa.id_argument "
-				+ "where a.id_project = :idProject "
-				+ "and a.pro = :pro "
-				+ "group by 1"
-				+ "order by count(aa.id_citizen) desc, a.id "
-				+ "limit :max "
-				+ "offset :offset ;")
-				.setParameter("idProject", idProject)
-				.setParameter("max", max)
-				.setParameter("offset", offset)
-				.setParameter("pro", pro)
-				.getResultList();
 		
 		List<Object> argumentsData = em.createNativeQuery(
 				"select a.id, cast(count(aa1.id_citizen) as integer) as agreements, aa2.id_citizen as agreed "
@@ -309,25 +310,36 @@ public class DBAccessWSI {
 				.setParameter("offset", offset)
 				.getResultList();
 		
-		if (arguments.size() != argumentsData.size()) {
-			System.out.println("Different number of arguments and it's datas.");
-			return null;
-		}
-		
 		List<ArgumentView> argumentsView = new ArrayList<ArgumentView>();
 		
-		for (int i = 0; i < arguments.size(); i++) {
+		int argumentsIds[] = new int[argumentsData.size()];
+		
+		for (int i = 0; i < argumentsData.size(); i++) {
 			ArgumentView argumentView = new ArgumentView();
-			argumentView.setArgument(arguments.get(i));
 			Object argumentData[] = (Object[])argumentsData.get(i);
 			argumentView.setAgreements((int)argumentData[1]);
 			argumentView.setAgreed(argumentData[2] == null ? false : true);
-			if(argumentView.getArgument().getId() != (int)argumentData[0]) {
-				System.out.println("Arguments and it's datas out of sync.");
-				return null;
-			}
+			argumentsIds[i] = (int)argumentData[0];
 			argumentsView.add(argumentView);
 		}
+		
+		List<Argument> arguments = em.createQuery(
+				"select a.id, a.argument, a.pro, a.id_citizen, a_id_project "
+				+ "from argument a "
+				+ "left join agreeargument aa "
+				+ "on a.id = aa.id_argument "
+				+ "where a.id_project = :idProject "
+				+ "and a.pro = :pro "
+				+ "group by 1"
+				+ "order by count(aa.id_citizen) desc, a.id "
+				+ "limit :max "
+				+ "offset :offset ;")
+				.setParameter("idProject", idProject)
+				.setParameter("max", max)
+				.setParameter("offset", offset)
+				.setParameter("pro", pro)
+				.getResultList();
+		
 		return argumentsView;
 	}
 	
